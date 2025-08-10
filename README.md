@@ -53,11 +53,12 @@ where $Q_{ij}^+$ denotes the positive entries of the matrix $Q$, and $Q_{ij}^-$ 
 
 Following the Vanguard team’s approach, we employ the Variational Quantum Eigensolver (VQE) to solve the unconstrained formulation. Inspired by both the TwoLocal ansatz and the BFCD ansatz (https://arxiv.org/pdf/2405.13898), we design a custom ansatz in which the entanglement block consists of $R_{xx}(\theta)$ gates arranged according to a bilinear entanglement map. This structure aims to balance expressibility and circuit depth while leveraging efficient two-qubit interactions. For the case of $8$ qubits, the ansatz is depicted schematically in the circuit below.
 
-
+<img width="1327" height="867" alt="Image" src="https://github.com/user-attachments/assets/eb4d45e5-f414-43f4-b11f-9994b5763bf7" />
 
 In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized by the classical optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the Vanguard team’s repository. As shown in the subsection IV, this design proves more efficient for tackling the 31-bonds problem.
 
 ### IV. Solve the optimization problem
+
 
 
 
