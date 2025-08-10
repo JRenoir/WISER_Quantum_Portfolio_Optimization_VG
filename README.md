@@ -68,6 +68,7 @@ For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schemati
 <p align="center">
 <img width="600" height="867" alt="Image" src="https://github.com/user-attachments/assets/eb4d45e5-f414-43f4-b11f-9994b5763bf7" />
 </p>
+
 In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized by the classical optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the project initiators’ repository. As shown in the subsection IV, this design proves more efficient for tackling the $31$-bonds problem.
 
 VQE will modify these angles to minimize objective function. 
@@ -98,7 +99,9 @@ We design an entanglement map inspired by the small-world network model of Watts
 
 For small $p$, the connectivity pattern is only slightly modified from the bilinear pattern, but it introduces a few long-range “shortcuts” that reduce the average path length. This approach is currently a prototype and remains to be fully tested, but we anticipate it could be beneficial for large-scale instances where the problem coupling matrix is not geometrically local—e.g., the interaction between qubits $1$ and $n$ can be comparable to that of neighboring pairs. In such cases, a pure ring forces multi-hop mediation and may slow information propagation; our small-world edges add sparse shortcuts that better align the circuit connectivity with the problem couplings while keeping two-qubit depth low via layered matchings. 
 
-
+<p align="center">
+<img width="600" height="858" alt="Image" src="https://github.com/user-attachments/assets/6186afe7-e24a-4293-92e1-8a352c8fe5b3" />
+</p>
 
 
 
