@@ -64,25 +64,27 @@ We map $n$ binary variables to $n$ qubits. Following the project initiators’ a
 - **Ansatz params**: `{'reps': 1, 'entanglement': 'bilinear'}`
 - **Final Measurements**: All qubits measured to classical bits
 
-For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schematically in the circuit below.
+For the case of $8$ qubits, the ansatz is depicted schematically in the circuit below.
 
 <p align="center">
 <img width="600" height="867" alt="Image" src="https://github.com/user-attachments/assets/eb4d45e5-f414-43f4-b11f-9994b5763bf7" />
 </p>
 
-In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized by the optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the project initiators’ repository. As shown in the subsection IV, this design proves more efficient for tackling the $31$-bonds problem.
+In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized by the optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the project initiators’ repository. **As shown in the subsection IV, this design proves more efficient for tackling the 31-bonds problem**.
 
 VQE will modify these angles to minimize objective function. 
 
-### IV. Solve the optimization problem
+### IV. Solve the 31-bond optimization problem
 
 We adopt the optimization pipeline developed by the project initiators:
 
-Step 1: Problem mapping and circuit pattern construction; Step 2: Circuit optimization and transpilation; Step 3: Backend execution and optimization; Step 4: Post-processing and local search
+Step 1: Problem mapping and circuit pattern construction; Step 2: Circuit optimization and transpilation; Step 3: Backend execution and optimization
+
+We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166) and CVaR aggregation rule ($\alpha$ is fixed at $0.1$) developed by the project initiators. We are also developing a new **quantum natural gradient optimizer**, which will be tested in the next stage; see Appendix II for details.
 
 **Parameters Used**:
 
-- LP file: `data/1/31bonds/docplex-bin-avgonly-nocplexvars.lp` (An original optimization $31$-bond problem with binary variables `iTrade_*`, quadratic objective function, and linear inequality constraints)
+- LP file: `data/1/31bonds/docplex-bin-avgonly-nocplexvars.lp` (An original optimization **31-bond problem** with binary variables `iTrade_*`, quadratic objective function, and linear inequality constraints)
 - Ansatz: `'TwoLocalxx'`
 - Ansatz params: `{'reps': 1, 'entanglement': 'bilinear'}`
 - Theta initial: `'piby3'` (Parameter initialization)
@@ -101,7 +103,7 @@ For small $p$, the connectivity pattern is only slightly modified from the bilin
 **Ansatz Details**:
 
 - Ansatz: `'TwoLocalxx'`
-- Ansatz params: `{'reps': 1, 'entanglement': 'bilinear'}`
+- Ansatz params: `{'reps': 1, 'entanglement': 'smallworld'}`
 
 For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schematically in the circuit below.
 
@@ -109,12 +111,11 @@ For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schemati
 <img width="600" height="858" alt="Image" src="https://github.com/user-attachments/assets/6186afe7-e24a-4293-92e1-8a352c8fe5b3" />
 </p>
 
-In general, for $n$ qubits, the circuit contains $2n$ gates and $2n$ tunable parameters to be optimized by the classical optimizer.
+In general, for $n$ qubits, the circuit contains $2n$ gates and $2n$ tunable parameters to be optimized by the optimizer. For this certain circuit, it builds upon the bilinear pattern with an extra layer.
 
 ### II. Quantum Natural SPSA Optimizer
 
 We are currently developing a new quantum natural gradient optimizer following [PennyLane’s QN-SPSA demo](https://pennylane.ai/qml/demos/qnspsa), and implemented in Qiskit. The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
-
 
 
 
