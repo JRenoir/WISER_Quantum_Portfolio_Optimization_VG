@@ -61,6 +61,7 @@ We map $n$ binary variables to $n$ qubits. Following the project initiators’ a
 
 - **Architecture**: RY rotation gates + RXX entangling gates
 - **Parameter**: `θ[0], θ[1], ..., θ[2n-1]` (parameterized rotation angles)
+- **Ansatz params**: `{'reps': 1, 'entanglement': 'bilinear'}`
 - **Final Measurements**: All qubits measured to classical bits
 
 For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schematically in the circuit below.
@@ -93,19 +94,25 @@ Step 1: Problem mapping and circuit pattern construction; Step 2: Circuit optimi
 
 ### I. Entanglement Map Based on a Small-World Graph
 
-**Ansatz params**: `'entanglement': 'smallworld'`
-
 We design an entanglement map inspired by the small-world network model of Watts–Strogatz, aiming to reduce the average path length between qubits. The core idea is to modify the standard ring connectivity by introducing a probability of connecting two distant qubits. Using a connected Watts–Strogatz graph with $n$ nodes, each connected to $k$ nearest neighbors and a rewiring probability $p$, we generate an edge set representing qubit connections. The resulting edges are then decomposed into matching layers, where each layer contains edges that do not share nodes. This allows the entanglement operations within a layer to be executed in parallel in the quantum circuit.
 
 For small $p$, the connectivity pattern is only slightly modified from the bilinear pattern, but it introduces a few long-range “shortcuts” that reduce the average path length. This approach is currently a prototype and remains to be fully tested, but we anticipate it could be beneficial for large-scale instances where the problem coupling matrix is not geometrically local—e.g., the interaction between qubits $1$ and $n$ can be comparable to that of neighboring pairs. In such cases, a pure ring forces multi-hop mediation and may slow information propagation; our small-world edges add sparse shortcuts that better align the circuit connectivity with the problem couplings while keeping two-qubit depth low via layered matchings. 
+
+**Ansatz Details**:
+
+- Ansatz: `'TwoLocalxx'`
+- Ansatz params: `{'reps': 1, 'entanglement': 'bilinear'}`
+
+For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schematically in the circuit below.
 
 <p align="center">
 <img width="600" height="858" alt="Image" src="https://github.com/user-attachments/assets/6186afe7-e24a-4293-92e1-8a352c8fe5b3" />
 </p>
 
 
+### II. Quantum Natural SPSA Optimizer
 
-
+We are currently developing a new quantum natural gradient optimizer following [PennyLane’s QN-SPSA demo](https://pennylane.ai/qml/demos/qnspsa), and implemented in Qiskit. The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
 
 
 
