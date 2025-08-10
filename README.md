@@ -35,25 +35,25 @@ We want to mimic the index’s characteristics as closely as possible, so our ob
 
 ### II. Convert the binary optimization problem to quadratic unconstrained binary optimization (QUBO)
 
-Since each $y_c$ is binary (0 or 1), note that $y_c^2=y_c$. The cross terms $y_cy_{c'}$ are the true quadratic interactions. We can write our quadratic objective using an upper triangular matrix $Q\in \R^{n\times n}$, where $n$ is the number of bonds in the set we considered,
-$$
-\min_x x^TQx+c,
-$$
-where $c$ is a constant. It can be mapped to an Ising spin-glass Hamiltonian, making it amenable to implementation on a quantum computer. The linear constraints can be encoded in $A\in\R^{m\times n}$, where $m$ is the number of constraints, such that constraints write as $Ax-b\ge0$. Following the approach used by the Vanguard team, we incorporate the problem’s constraints directly into the objective function by adding a quadratic penalty term,
-$$
-\min_x x^TQx+c+\lambda\sum_{i=1}^m[\max(0,b_i-(Ax)_i)]^2,
-$$
+Since each $y_c$ is binary (0 or 1), note that $y_c^2=y_c$. The cross terms $y_cy_{c'}$ are the true quadratic interactions. We can write our quadratic objective using an upper triangular matrix $Q\in \mathbb{R}^{n\times n}$, where $n$ is the number of bonds in the set we considered,
+
+$$\min_x x^TQx+c,$$
+
+where $c$ is a constant. It can be mapped to an Ising spin-glass Hamiltonian, making it amenable to implementation on a quantum computer. The linear constraints can be encoded in $A\in\mathbb{R}^{m\times n}$, where $m$ is the number of constraints, such that constraints write as $Ax-b\ge0$. Following the approach used by the Vanguard team, we incorporate the problem’s constraints directly into the objective function by adding a quadratic penalty term,
+
+$$\min_x x^TQx+c+\lambda\sum_{i=1}^m[\max(0,b_i-(Ax)_i)]^2,$$
+
 where the penalty coefficient $\lambda$ is set as
-$$
-\lambda=1.1(\sum_{i,j}Q_{ij}^+-\sum_{i,j}Q_{ij}^-),
-$$
+
+$$\lambda=1.1(\sum_{i,j}Q_{ij}^+-\sum_{i,j}Q_{ij}^-),$$
+
 where $Q_{ij}^+$ denotes the positive entries of the matrix $Q$, and $Q_{ij}^-$ denotes the negative entries in $Q$ matrix.
 
 ### III. Write a quantum optimization program
 
 Following the Vanguard team’s approach, we employ the Variational Quantum Eigensolver (VQE) to solve the unconstrained formulation. Inspired by both the TwoLocal ansatz and the BFCD ansatz (https://arxiv.org/pdf/2405.13898), we design a custom ansatz in which the entanglement block consists of $R_{xx}(\theta)$ gates arranged according to a bilinear entanglement map. This structure aims to balance expressibility and circuit depth while leveraging efficient two-qubit interactions. For the case of $8$ qubits, the ansatz is depicted schematically in the circuit below.
 
-<img src="C:\Users\obser\AppData\Roaming\Typora\typora-user-images\image-20250810000803846.png" style="zoom:40%;" />
+
 
 In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized by the classical optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the Vanguard team’s repository. As shown in the subsection IV, this design proves more efficient for tackling the 31-bonds problem.
 
