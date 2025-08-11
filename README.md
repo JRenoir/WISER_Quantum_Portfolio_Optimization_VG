@@ -101,6 +101,12 @@ We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166)
 
 [📄 Project Presentation Deck](Project_Presentation_deck.pptx)
 
+### V. Comparison with the Benchmark Solution
+
+Our ansatz outperforms the standard TwoLocal ansatz and the BFCD ansatz in most experiments, achieving comparable or better solution quality with fewer iterations (see the convergence figure below).
+
+To further enhance performance for large-scale problems, we designed an entanglement map based on a Small-World graph. This approach aims to improve connectivity efficiency and is described in detail in Appendix I.
+
 ## Appendix
 
 ### I. Entanglement Map Based on a Small-World Graph
@@ -135,6 +141,7 @@ We are currently implementing a new quantum natural gradient optimizer inspired 
 The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
 
 We have added a new branch to the QN-SPSA implementation in `/src/sbo/src/optimizer/optimization_wrapper.py`. The new file `/src/sbo/src/optimizer/QNSPSA_extra.py` defines a helper function for feeding parameters into the QNSPSA optimizer, including the maximum number of iterations and the learning rate. These values can be adjusted for fine-tuning. To use this method, set `optimizer='QNSPSA'` (instead of `optimizer='nft'`) when specifying the optimizer in the input.
+
 
 
 
