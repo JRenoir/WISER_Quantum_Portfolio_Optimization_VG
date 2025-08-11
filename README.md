@@ -57,6 +57,8 @@ where $Q_{ij}^+$ denotes the positive entries of the matrix $Q$, and $Q_{ij}^-$ 
 
 We map $n$ binary variables to $n$ qubits. Following the project initiators’ approach, we employ the Variational Quantum Eigensolver (VQE) to solve the unconstrained formulation. Inspired by both the TwoLocal ansatz and the BFCD ansatz (https://arxiv.org/pdf/2405.13898), we design **a custom ansatz** (named `'TwoLocalxx'`) **in which the entanglement block consists of RXX gates arranged according to a bilinear entanglement map**. This structure aims to balance expressibility and circuit depth while leveraging efficient two-qubit interactions. 
 
+We added a new branch in `/src/step_1.py` to handle the case `ansatz == 'TwoLocalxx'`.
+
 **Ansatz Details**:
 
 - **Architecture**: RY rotation gates + RXX entangling gates
@@ -78,7 +80,7 @@ We adopt the optimization pipeline developed by the project initiators:
 
 Step 1: Problem mapping and circuit pattern construction; Step 2: Circuit optimization and transpilation; Step 3: Backend execution and optimization
 
-We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166) and CVaR aggregation rule ($\alpha$ is fixed at $0.1$) developed by the project initiators. We are also developing a new **quantum natural gradient optimizer**, which will be tested in the next stage; see **Appendix II** for details.
+We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166) and CVaR aggregation rule ($\alpha$ is fixed at $0.1$) developed by the project initiators. **We are also implementing a new quantum natural gradient optimizer, which will be tested in the next stage**; see **Appendix II** for details.
 
 **Parameters Used**:
 
@@ -98,24 +100,32 @@ We design an entanglement map inspired by the small-world network model of Watts
 
 For small $p$, the connectivity pattern is only slightly modified from the bilinear pattern, but it introduces a few long-range “shortcuts” that reduce the average path length. This approach is currently a prototype and remains to be fully tested, but we anticipate it could be beneficial for large-scale instances where the problem coupling matrix is not geometrically local—e.g., the interaction between qubits $1$ and $n$ can be comparable to that of neighboring pairs. In such cases, a pure ring forces multi-hop mediation and may slow information propagation; our small-world edges add sparse shortcuts that better align the circuit connectivity with the problem couplings while keeping two-qubit depth low via layered matchings. 
 
+For the small-world entanglement approach, we added two functions — `find_small_world_edges` and `_layerize_edges` — in `/src/step_1.py`.
+
+- `find_small_world_edges` generates a connected Watts–Strogatz graph for a given number of qubits, degree $k$, and rewiring probability $p$, returning the edge list.
+- `_layerize_edges` decomposes the edge set into matching layers, where no two edges in the same layer share a node, enabling parallel execution of entangling gates in the quantum circuit.
+
+To use this method, set `"entanglement": "smallworld"` in the input parameters.
+
+For the case of $8$ qubits, the ansatz based on the small-world graph ($p=0.1$, $k=2$) is depicted schematically in the circuit below.
+
+<p align="center">
+<img width="600" height="858" alt="Image" src="https://github.com/user-attachments/assets/6186afe7-e24a-4293-92e1-8a352c8fe5b3" />
+</p>
 **Ansatz Details**:
 
 - Ansatz: `'TwoLocalxx'`
 - Ansatz params: `{'reps': 1, 'entanglement': 'smallworld'}`
 
-For the case of $8$ qubits for $8$-bond problem, the ansatz is depicted schematically in the circuit below.
-
-<p align="center">
-<img width="600" height="858" alt="Image" src="https://github.com/user-attachments/assets/6186afe7-e24a-4293-92e1-8a352c8fe5b3" />
-</p>
-
-In general, for $n$ qubits, the circuit contains $2n$ gates and $2n$ tunable parameters to be optimized by the optimizer. For this certain circuit, it builds upon the bilinear pattern with an extra layer.
+For this certain circuit, it builds upon the bilinear pattern with an extra layer. In general, for $n$ qubits, the circuit ($k=2$) contains $2n$ gates and $2n$ tunable parameters to be optimized by the optimizer.
 
 ### II. Quantum Natural SPSA Optimizer
 
-We are currently developing a new quantum natural gradient optimizer following [PennyLane’s QN-SPSA demo](https://pennylane.ai/qml/demos/qnspsa), and implemented in Qiskit. The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
+We are currently implementing a new quantum natural gradient optimizer inspired by [PennyLane’s QN-SPSA demo](https://pennylane.ai/qml/demos/qnspsa). QN-SPSA is a built-in method in `qiskit.algorithms.optimizers`. QN refers to metric calculation to smooth the landscape of search and SPSA uses two estimations to approximate the gradient and tensor metric in searching. It covers more parameters in each iteration and stochastic estimation avoids complicated differential operations.
 
+The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
 
+We have added a new branch to the QN-SPSA implementation in `/src/sbo/src/optimizer/optimization_wrapper.py`. The new file `/src/sbo/src/optimizer/QNSPSA_extra.py` defines a helper function for feeding parameters into the QNSPSA optimizer, including the maximum number of iterations and the learning rate. These values can be adjusted for fine-tuning. To use this method, set `optimizer='QNSPSA'` (instead of `optimizer='nft'`) when specifying the optimizer in the input.
 
 
 
