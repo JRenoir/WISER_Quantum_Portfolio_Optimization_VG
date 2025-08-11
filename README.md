@@ -92,6 +92,10 @@ We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166)
 - Simulator Type: Matrix Product State (MPS) method
 - Noise Model: Noiseless (ideal simulation)
 
+## Project Presentation deck
+
+
+
 ## Appendix
 
 ### I. Entanglement Map Based on a Small-World Graph
