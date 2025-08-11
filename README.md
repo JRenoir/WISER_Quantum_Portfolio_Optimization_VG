@@ -76,6 +76,11 @@ In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable
 
 ### IV. Solve the 31-bond optimization problem
 
+The final result can be viewed in [solve_31_bond_problem.ipynb](solve_31_bond_problem.ipynb).  
+In this notebook, the solution is validated using a classical optimization routine for comparison with the quantum approach.
+
+**Details**:
+
 We adopt the optimization pipeline developed by the project initiators:
 
 Step 1: Problem mapping and circuit pattern construction; Step 2: Circuit optimization and transpilation; Step 3: Backend execution and optimization
@@ -130,6 +135,7 @@ We are currently implementing a new quantum natural gradient optimizer inspired 
 The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
 
 We have added a new branch to the QN-SPSA implementation in `/src/sbo/src/optimizer/optimization_wrapper.py`. The new file `/src/sbo/src/optimizer/QNSPSA_extra.py` defines a helper function for feeding parameters into the QNSPSA optimizer, including the maximum number of iterations and the learning rate. These values can be adjusted for fine-tuning. To use this method, set `optimizer='QNSPSA'` (instead of `optimizer='nft'`) when specifying the optimizer in the input.
+
 
 
 
