@@ -8,11 +8,11 @@ Project Name: Portfolio Optimization
 
 Team Name: TAMU for Portfolio Optimization
 
-| Member's Name (in alphabetical order) | WISER Enrollment ID |
-| ------------------------------------- | ------------------- |
-| Qingtian Miao<sup>*</sup>             | gst-4UiYo4Uymy3kg8z |
-| Yuhan Wu                              | gst-ah8E30GshygYrpw |
-| Wenzhuo Zhang                         | gst-AmK6smzoJwnxJH0 |
+| Member's Name             | WISER Enrollment ID |
+| ------------------------- | ------------------- |
+| Qingtian Miao<sup>*</sup> | gst-4UiYo4Uymy3kg8z |
+| Wenzhuo Zhang             | gst-AmK6smzoJwnxJH0 |
+| Yuhan Wu                  | gst-ah8E30GshygYrpw |
 
 <small>* Group leader.</small>
 
@@ -55,7 +55,7 @@ where $Q_{ij}^+$ denotes the positive entries of the matrix $Q$, and $Q_{ij}^-$ 
 
 ### III. Write a quantum optimization program
 
-We map $n$ binary variables to $n$ qubits. Following the project initiators’ approach, we employ the Variational Quantum Eigensolver (VQE) to solve the unconstrained formulation. Inspired by both the TwoLocal ansatz and the BFCD ansatz (https://arxiv.org/pdf/2405.13898), we design a custom ansatz (named `'TwoLocalxx'`) in which the entanglement block consists of RXX gates arranged according to a bilinear entanglement map. This structure aims to balance expressibility and circuit depth while leveraging efficient two-qubit interactions. 
+We map $n$ binary variables to $n$ qubits. Following the project initiators’ approach, we employ the Variational Quantum Eigensolver (VQE) to solve the unconstrained formulation. Inspired by both the TwoLocal ansatz and the BFCD ansatz (https://arxiv.org/pdf/2405.13898), we design **a custom ansatz** (named `'TwoLocalxx'`) **in which the entanglement block consists of RXX gates arranged according to a bilinear entanglement map**. This structure aims to balance expressibility and circuit depth while leveraging efficient two-qubit interactions. 
 
 **Ansatz Details**:
 
@@ -70,9 +70,7 @@ For the case of $8$ qubits, the ansatz is depicted schematically in the circuit 
 <img width="600" height="867" alt="Image" src="https://github.com/user-attachments/assets/eb4d45e5-f414-43f4-b11f-9994b5763bf7" />
 </p>
 
-In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized by the optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the project initiators’ repository. **As shown in the subsection IV, this design proves more efficient for tackling the 31-bonds problem**.
-
-VQE will modify these angles to minimize objective function. 
+In general, for $n$ qubits, the circuit contains $2n-1$ gates and $2n-1$ tunable parameters to be optimized to minimize objective function by the optimizer. Both the depth and the number of parameters are smaller than those of the standard TwoLocal ansatz and the BFCD ansatz provided in the project initiators’ repository. **As shown in the Summary V, this design proves more efficient for tackling the 31-bonds problem**.
 
 ### IV. Solve the 31-bond optimization problem
 
@@ -80,11 +78,11 @@ We adopt the optimization pipeline developed by the project initiators:
 
 Step 1: Problem mapping and circuit pattern construction; Step 2: Circuit optimization and transpilation; Step 3: Backend execution and optimization
 
-We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166) and CVaR aggregation rule ($\alpha$ is fixed at $0.1$) developed by the project initiators. We are also developing a new **quantum natural gradient optimizer**, which will be tested in the next stage; see Appendix II for details.
+We also adopt the gradient-free NFT optimizer (https://arxiv.org/pdf/1903.12166) and CVaR aggregation rule ($\alpha$ is fixed at $0.1$) developed by the project initiators. We are also developing a new **quantum natural gradient optimizer**, which will be tested in the next stage; see **Appendix II** for details.
 
 **Parameters Used**:
 
-- LP file: `data/1/31bonds/docplex-bin-avgonly-nocplexvars.lp` (An original optimization **31-bond problem** with binary variables `iTrade_*`, quadratic objective function, and linear inequality constraints)
+- LP file: `data/1/31bonds/docplex-bin-avgonly-nocplexvars.lp` (An original optimization **31-bond problem** with binary variables `iTrade_*`, quadratic objective function, and linear inequality constraints; We uses CPLEX for parsing the LP file)
 - Ansatz: `'TwoLocalxx'`
 - Ansatz params: `{'reps': 1, 'entanglement': 'bilinear'}`
 - Theta initial: `'piby3'` (Parameter initialization)
