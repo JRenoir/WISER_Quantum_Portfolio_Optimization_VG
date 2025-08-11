@@ -131,6 +131,7 @@ For the case of $8$ qubits, the ansatz based on the small-world graph ($p=0.1$, 
 <p align="center">
 <img width="600" height="858" alt="Image" src="https://github.com/user-attachments/assets/6186afe7-e24a-4293-92e1-8a352c8fe5b3" />
 </p>
+
 **Ansatz Details**:
 
 - Ansatz: `'TwoLocalxx'`
@@ -145,6 +146,7 @@ We are currently implementing a new quantum natural gradient optimizer inspired 
 The original project initiators used the NFT optimizer as the primary variational parameter update method. NFT, being a classical approach, does not take into account the geometric properties of quantum state space. In contrast, a quantum natural gradient method introduces the structure of the non-Euclidean parameter space. Prior benchmarking indicates that QN-SPSA can achieve faster convergence and higher final accuracy than conventional optimizers, making it a strong candidate for variational quantum algorithms.
 
 We have added a new branch to the QN-SPSA implementation in `/src/sbo/src/optimizer/optimization_wrapper.py`. The new file `/src/sbo/src/optimizer/QNSPSA_extra.py` defines a helper function for feeding parameters into the QNSPSA optimizer, including the maximum number of iterations and the learning rate. These values can be adjusted for fine-tuning. To use this method, set `optimizer='QNSPSA'` (instead of `optimizer='nft'`) when specifying the optimizer in the input.
+
 
 
 
